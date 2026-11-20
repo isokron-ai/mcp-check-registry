@@ -12,27 +12,37 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T19:39:39Z",
-    "commit": "0dc49b7383e15c4529ac41bbfb6f6517c6443e33",
-    "checker": "1.0.0",
-    "rubric": null,
+    "at": "2026-11-20T20:11:12Z",
+    "commit": "7608e27342ea7e8462f00038dd6ff24d9503c6d5",
+    "checker": "1.1.0",
+    "rubric": "2.1.0",
     "source": "repo-static",
-    "status": "no-tools",
-    "error": "no tool definitions found in isokron-ai/mcp-check (scanned 22 of 22 source files).",
-    "fidelity": null,
-    "tools": null,
-    "catalogHash": null,
-    "grades": null,
-    "findings": null
+    "status": "ok",
+    "fidelity": "derived",
+    "tools": 3,
+    "catalogHash": "sha256:5215d0193e5b2cc974721bb15b1f5665491451007d6cd0cad739de7725968b46",
+    "grades": {
+      "spec": "C",
+      "anthropic": "A",
+      "openai": "A",
+      "security": "A",
+      "quality": "A",
+      "surface": null
+    },
+    "findings": {
+      "high": 0,
+      "medium": 6,
+      "low": 5
+    }
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:39:40Z",
+    "checkedAt": "2026-11-20T20:11:14Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:39:40Z",
+    "checkedAt": "2026-11-20T20:11:14Z",
     "method": ""
   }
 }

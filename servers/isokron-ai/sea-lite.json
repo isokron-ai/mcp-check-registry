@@ -12,27 +12,37 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T19:39:35Z",
+    "at": "2026-11-20T20:11:16Z",
     "commit": "b536cc18d7eeb43a16da3d3bb1f88edfa6df3eb3",
-    "checker": "1.0.0",
-    "rubric": null,
+    "checker": "1.1.0",
+    "rubric": "2.1.0",
     "source": "repo-static",
-    "status": "no-tools",
-    "error": "no tool definitions found in isokron-ai/sea-lite (scanned 54 of 54 source files).",
-    "fidelity": null,
-    "tools": null,
-    "catalogHash": null,
-    "grades": null,
-    "findings": null
+    "status": "ok",
+    "fidelity": "exact",
+    "tools": 15,
+    "catalogHash": "sha256:7f4331aa5204858fa03a62bf0bf73ec52768424ae146876d89b4009e87003430",
+    "grades": {
+      "spec": "A",
+      "anthropic": "A",
+      "openai": "B",
+      "security": "A",
+      "quality": "A",
+      "surface": "B"
+    },
+    "findings": {
+      "high": 4,
+      "medium": 12,
+      "low": 39
+    }
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:39:36Z",
+    "checkedAt": "2026-11-20T20:11:21Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:39:36Z",
+    "checkedAt": "2026-11-20T20:11:21Z",
     "method": ""
   }
 }

@@ -12,37 +12,37 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T19:39:31Z",
+    "at": "2026-11-20T20:11:06Z",
     "commit": "6df19640ea1c63aabdbb08aa6135915e5fc0cc63",
-    "checker": "1.0.0",
+    "checker": "1.1.0",
     "rubric": "2.1.0",
     "source": "repo-static",
     "status": "ok",
-    "fidelity": "derived",
+    "fidelity": "exact",
     "tools": 13,
-    "catalogHash": "sha256:8de379f4605e82f383e7025c593817ace41cc636814280280d1d387bc939608a",
+    "catalogHash": "sha256:8dab94c7120005b70aa8b248b42a264ab90cb67ed50ac41236bdc4e7475f5eb6",
     "grades": {
       "spec": "A",
-      "anthropic": "B",
+      "anthropic": "A",
       "openai": "C",
       "security": "A",
       "quality": "A",
       "surface": "F"
     },
     "findings": {
-      "high": 9,
-      "medium": 9,
-      "low": 48
+      "high": 7,
+      "medium": 8,
+      "low": 41
     }
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:39:33Z",
+    "checkedAt": "2026-11-20T20:11:10Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:39:33Z",
+    "checkedAt": "2026-11-20T20:11:10Z",
     "method": ""
   }
 }
