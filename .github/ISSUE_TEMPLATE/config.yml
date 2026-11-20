@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: How the checks work
-    url: https://isokron.ai/mcp-check?utm_source=mcp-check-registry-readme&utm_medium=readme
+    url: https://isokron.ai/mcp-check?utm_source=mcp-check-registry-issue-template&utm_medium=github-template
     about: Every check, what it looks for and how to fix it.
