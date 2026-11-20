@@ -29,7 +29,15 @@ It then replies on the issue with:
 
 It also opens a pull request that adds `servers/<owner>/<repo>.json`. We review it and merge; the site picks it up on its next build. Edit your issue at any time to scan again.
 
-If no tool definitions are found (tools built at run time, loaded from configuration or registered through a wrapper), the reply explains how to commit your server's tool list so the static reader can use it.
+### Not graded yet
+
+If no tool definitions are found in the source (tools built at run time, loaded from configuration or registered through a wrapper), the server is **not graded yet**. Entries in that state carry `scan.status: "no-tools"` and no grades. To get a grade:
+
+1. Save your server's tool list on your machine: `npx @isokron/mcp-check capture -- <command that starts your server> > tools.json`. This starts your server locally and asks it for its tools/list only; no tool is called.
+2. Commit `tools.json` to the repository (in the root, or in the listed folder). The static reader uses a committed tool list as is.
+3. Edit your submission issue to scan again, or wait for the nightly refresh.
+
+In your own CI, the Action can also grade the live list: set `tools-file: tools.json`, or `command:` with the command that starts your server.
 
 Severity counts use the checker's levels: **high** is a blocking item, **medium** needs attention, **low** is advice.
 
@@ -56,6 +64,14 @@ jobs:
 ```
 
 Nothing is written to your repository until you review the file and commit it. With neither `tools-file` nor `command` set, the Action reads the tool definitions from the checked-out source and runs nothing. Every pull request in your repository then gets the grades in its job summary.
+
+For a folder listing in a monorepo, the link adds the folder to the mcp-check step, so the Action reads only that folder:
+
+```yaml
+      - uses: isokron-ai/mcp-check@v1
+        with:
+          working-directory: "packages/server"
+```
 
 ## Owner-verified (claiming a listing)
 

@@ -89,6 +89,18 @@ test('folder listings name the folder, use the slug listing URL and claim with a
   assert.match(md, /folder `packages\/Server_X`/);
   assert.ok(md.includes('/mcp-check/registry/isokron-ai/kronicle-lite__packages-server-x?'));
   assert.ok(md.includes('{\n  "id": "isokron-ai/kronicle-lite",\n  "path": "packages/Server_X"\n}'));
+  const link = /\*\*\[Add mcp-check to your CI\]\((https:[^)\s]+)\)\*\*/.exec(md)[1];
+  assert.equal(new URL(link).searchParams.get('value'), workflowYaml(undefined, { path: 'packages/Server_X' }));
+  assert.ok(md.includes('          working-directory: "packages/Server_X"\n```'), 'the shown workflow matches the link');
+  assert.match(md, /reads the tool definitions from the folder `packages\/Server_X`/);
+});
+
+test('a no-tools reply says not graded yet and gives the fix route', () => {
+  const md = renderError({ kind: 'no-tools', repo, scan: { commit: SHA, error: 'x' } });
+  assert.match(md, /## `isokron-ai\/kronicle-lite` is not graded yet/);
+  assert.match(md, /mcp-check capture --/);
+  assert.match(md, /tools-file: tools\.json/);
+  assert.match(md, /`command:`/);
 });
 
 test('public copy rules: no email addresses, no prices', () => {

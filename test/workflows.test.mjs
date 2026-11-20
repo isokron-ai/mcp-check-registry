@@ -39,4 +39,6 @@ test('default permissions are empty or read-only; writes are per job', () => {
 test('the README shows the same workflow the one-click link installs', () => {
   const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
   assert.ok(readme.includes('```yaml\n# .github/workflows/mcp-check.yml\n' + workflowYaml() + '```'));
+  const folderTail = workflowYaml(undefined, { path: 'packages/server' }).split('\n').slice(-4).join('\n');
+  assert.ok(readme.includes('```yaml\n' + folderTail + '```'), 'README folder example matches the template');
 });

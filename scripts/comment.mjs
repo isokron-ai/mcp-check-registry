@@ -41,18 +41,18 @@ function gradesTable(scan) {
 }
 
 function ciAndClaim({ full, owner, repo, branch, id, path, ci, ownerMark }) {
-  const yaml = workflowYaml();
+  const yaml = workflowYaml(undefined, { path });
   const out = [];
   out.push('### Add mcp-check to your CI');
   out.push('');
   if (ci?.verified) {
     out.push('Your default branch already runs it in ' + mdCode(ci.workflow) + ', so the listing shows **CI-verified**.');
   } else {
-    out.push('**[Add mcp-check to your CI](' + addToCiUrl({ owner, repo, branch }) + ')**');
+    out.push('**[Add mcp-check to your CI](' + addToCiUrl({ owner, repo, branch, path }) + ')**');
     out.push('');
     out.push('The link opens GitHub\'s new-file page in ' + mdCode(full) + ' with ' + mdCode(WORKFLOW_PATH) + ' filled in. Nothing is written to your repository until you review the file and commit it yourself. Without write access, GitHub offers to open a pull request instead.');
     out.push('');
-    out.push('The workflow checks out your code without keeping credentials, reads the tool definitions from it and grades them on every push and pull request. It runs nothing from your repository and needs read access only. Once it is on ' + mdCode(branch) + ', the listing shows **CI-verified** after the next nightly check.');
+    out.push('The workflow checks out your code without keeping credentials, reads the tool definitions from ' + (path ? 'the folder ' + mdCode(path) + ' (set as ' + mdCode('working-directory') + ')' : 'it') + ' and grades them on every push and pull request. It runs nothing from your repository and needs read access only. Once it is on ' + mdCode(branch) + ', the listing shows **CI-verified** after the next nightly check.');
   }
   out.push('');
   out.push('<details><summary>The workflow file</summary>');
@@ -139,11 +139,11 @@ export function renderError({ kind, errors = [], repo = null, scan = null, messa
     out.push('The registry lists public GitHub repositories. Edit the issue with the right URL and the check runs again.');
   } else if (kind === 'no-tools') {
     const full = repo.id;
-    out.push('## No tool definitions found in ' + mdCode(full));
+    out.push('## ' + mdCode(full) + ' is not graded yet');
     out.push('');
     out.push('The checker reads tool definitions straight from the source and runs nothing. It read ' + commitLink(full, scan.commit) + ' on ' + mdCode(repo.defaultBranch) + ' and found none' + scannedNote(scan.error) + '. That usually means the tools are built at run time in a way a static reader can\'t follow: generated from an API description, loaded from configuration, or registered through a wrapper.');
     out.push('');
-    out.push('You can still be listed:');
+    out.push('To get a grade:');
     out.push('');
     out.push('1. On your machine, save your server\'s tool list: `npx @isokron/mcp-check capture -- <command that starts your server> > tools.json`. This starts your server locally and asks it for its tools/list only; no tool is called.');
     out.push('2. Commit `tools.json` to the repository (in the root, or in the folder you listed). The static reader uses a committed tool list as is.');

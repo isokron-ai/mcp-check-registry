@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { workflowYaml, claimJson, addToCiUrl, claimUrl, newFileUrl } from '../scripts/lib/workflow-template.mjs';
+import { workflowYaml, yamlQuote, claimJson, addToCiUrl, claimUrl, newFileUrl } from '../scripts/lib/workflow-template.mjs';
 import { PINS } from '../scripts/lib/constants.mjs';
 
 test('the workflow is contract C1 with the current pins', () => {
@@ -51,4 +51,24 @@ test('the claim file names the id and round-trips through its link', () => {
   const u = new URL(claimUrl({ owner: 'acme', repo: 'x', branch: 'main', id: 'acme/x', path: 'packages/server' }));
   assert.equal(u.searchParams.get('filename'), '.github/mcp-check/registry.json');
   assert.deepEqual(JSON.parse(u.searchParams.get('value')), { id: 'acme/x', path: 'packages/server' });
+});
+
+test('a folder listing adds working-directory under the mcp-check step; root listings stay plain C1', () => {
+  assert.equal(workflowYaml(PINS, { path: '' }), workflowYaml());
+  const y = workflowYaml(PINS, { path: 'packages/server' });
+  assert.equal(y, workflowYaml().replace(/\n$/, '') + '\n        with:\n          working-directory: "packages/server"\n');
+});
+
+test('folder paths round-trip through the link and stay one quoted YAML string', () => {
+  for (const path of ['packages/server', 'my folder/@scope/srv', 'a "b" #c: d\\e', 'x\ny']) {
+    const url = addToCiUrl({ owner: 'acme', repo: 'mono', branch: 'main', path });
+    const value = new URL(url).searchParams.get('value');
+    assert.equal(value, workflowYaml(PINS, { path }));
+    const lines = value.split('\n');
+    assert.equal(lines.length, workflowYaml().split('\n').length + 2, 'exactly two extra lines: ' + JSON.stringify(path));
+    const m = /^          working-directory: (".*")$/.exec(lines[lines.length - 2]);
+    assert.ok(m, 'quoted scalar on one line');
+    assert.equal(JSON.parse(m[1]), path, 'the double-quoted scalar decodes back to the path');
+    assert.equal(m[1], yamlQuote(path));
+  }
 });

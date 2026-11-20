@@ -3,9 +3,18 @@ import { PINS, WORKFLOW_PATH, CLAIM_PATH } from './constants.mjs';
 
 const pin = (p) => p.ref + (p.label ? ' # ' + p.label : '');
 
-/** The workflow file exactly as the one-click link and the docs install it. */
-export function workflowYaml(pins = PINS) {
-  return [
+/**
+ * A YAML double-quoted scalar. JSON string syntax is valid YAML double-quoted syntax, so any
+ * folder name (spaces, "@", quotes, "#", ":") stays one plain string.
+ */
+export const yamlQuote = (s) => JSON.stringify(String(s));
+
+/**
+ * The workflow file exactly as the one-click link and the docs install it: contract C1 for a
+ * repository-root listing; a folder listing adds working-directory under the mcp-check step.
+ */
+export function workflowYaml(pins = PINS, { path = '' } = {}) {
+  const lines = [
     'name: MCP check',
     'on:',
     '  push:',
@@ -20,8 +29,9 @@ export function workflowYaml(pins = PINS) {
     '        with:',
     '          persist-credentials: false',
     '      - uses: isokron-ai/mcp-check@' + pin(pins.mcpCheck),
-    '',
-  ].join('\n');
+  ];
+  if (path) lines.push('        with:', '          working-directory: ' + yamlQuote(path));
+  return lines.concat('').join('\n');
 }
 
 /** The claim file: committing it to the default branch marks the listing owner-verified. */
@@ -41,5 +51,5 @@ export function newFileUrl({ owner, repo, branch, filename, value }) {
   return 'https://github.com/' + encodeURIComponent(owner) + '/' + encodeURIComponent(repo) + '/new/' + encBranch(branch) + '?' + q;
 }
 
-export const addToCiUrl = ({ owner, repo, branch }) => newFileUrl({ owner, repo, branch, filename: WORKFLOW_PATH, value: workflowYaml() });
+export const addToCiUrl = ({ owner, repo, branch, path = '' }) => newFileUrl({ owner, repo, branch, filename: WORKFLOW_PATH, value: workflowYaml(PINS, { path }) });
 export const claimUrl = ({ owner, repo, branch, id, path = '' }) => newFileUrl({ owner, repo, branch, filename: CLAIM_PATH, value: claimJson(id, path) });
