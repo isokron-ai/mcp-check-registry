@@ -12,37 +12,37 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T20:11:06Z",
-    "commit": "6df19640ea1c63aabdbb08aa6135915e5fc0cc63",
-    "checker": "1.1.0",
-    "rubric": "2.1.0",
+    "at": "2026-11-20T21:42:57Z",
+    "commit": "179d269889ee414c7eaa69ccc95a2a5888c2ab52",
+    "checker": "1.1.1",
+    "rubric": "2.1.1",
     "source": "repo-static",
     "status": "ok",
     "fidelity": "exact",
     "tools": 13,
-    "catalogHash": "sha256:8dab94c7120005b70aa8b248b42a264ab90cb67ed50ac41236bdc4e7475f5eb6",
+    "catalogHash": "sha256:60cf66ecb61db11ce6141aa52b2f9de5232731cd0e3fcecd7559a69cc023336e",
     "grades": {
       "spec": "A",
       "anthropic": "A",
-      "openai": "C",
+      "openai": "A",
       "security": "A",
       "quality": "A",
-      "surface": "F"
+      "surface": "A"
     },
     "findings": {
-      "high": 7,
-      "medium": 8,
-      "low": 41
+      "high": 0,
+      "medium": 2,
+      "low": 2
     }
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T20:11:10Z",
+    "checkedAt": "2026-11-20T21:43:00Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T20:11:10Z",
+    "checkedAt": "2026-11-20T21:43:00Z",
     "method": ""
   }
 }

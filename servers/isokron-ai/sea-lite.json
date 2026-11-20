@@ -12,10 +12,10 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T20:11:16Z",
+    "at": "2026-11-20T21:43:07Z",
     "commit": "b536cc18d7eeb43a16da3d3bb1f88edfa6df3eb3",
-    "checker": "1.1.0",
-    "rubric": "2.1.0",
+    "checker": "1.1.1",
+    "rubric": "2.1.1",
     "source": "repo-static",
     "status": "ok",
     "fidelity": "exact",
@@ -37,12 +37,12 @@
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T20:11:21Z",
+    "checkedAt": "2026-11-20T21:43:10Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T20:11:21Z",
+    "checkedAt": "2026-11-20T21:43:10Z",
     "method": ""
   }
 }
