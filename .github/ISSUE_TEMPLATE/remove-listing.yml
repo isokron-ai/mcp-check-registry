@@ -1,0 +1,25 @@
+name: Remove a listing
+description: Ask for a listing to be taken down. Honored for the repository's maintainers.
+title: "Remove: "
+labels: ["removal"]
+body:
+  - type: input
+    id: repository
+    attributes:
+      label: Repository URL
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything we should know (optional)
+    validations:
+      required: false
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Permission
+      options:
+        - label: I maintain this repository
+          required: true

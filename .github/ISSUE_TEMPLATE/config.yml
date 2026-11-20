@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How the checks work
+    url: https://isokron.ai/mcp-check?utm_source=github&utm_medium=registry&utm_campaign=registry
+    about: Every check, what it looks for and how to fix it.

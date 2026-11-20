@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/isokron-ai/mcp-check-registry/schema/server.schema.json",
+  "title": "MCP check registry entry",
+  "description": "One listed MCP server: servers/<owner>/<repo>.json, with a __<path-slug> suffix when a subfolder is listed. File names are lowercase; id keeps GitHub's spelling.",
+  "type": "object",
+  "required": ["schema", "id", "repo", "path", "name", "description", "submitted", "scan", "ci", "owner"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": { "const": 1 },
+    "id": {
+      "description": "owner/repo, or owner/repo/subfolder for a subfolder listing. The claim file names this.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/[A-Za-z0-9._-]{1,100}(?:/[A-Za-z0-9._@-]+)*$",
+      "maxLength": 340
+    },
+    "repo": { "type": "string", "pattern": "^https://github\\.com/[A-Za-z0-9-]+/[A-Za-z0-9._-]+$" },
+    "path": { "description": "Subfolder of the server inside the repository; empty for the root.", "type": "string", "pattern": "^(?:[A-Za-z0-9._@-]+(?:/[A-Za-z0-9._@-]+)*)?$", "maxLength": 200 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "description": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "submitted": {
+      "type": "object",
+      "required": ["at", "by", "issue"],
+      "additionalProperties": false,
+      "properties": {
+        "at": { "type": "string", "format": "date-time" },
+        "by": { "description": "GitHub login of the person who submitted it.", "type": "string", "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})(?:\\[bot\\])?$" },
+        "issue": { "description": "Submission issue number in this repository; null for entries added directly.", "type": ["integer", "null"], "minimum": 1 }
+      }
+    },
+    "scan": {
+      "type": "object",
+      "required": ["at", "commit", "checker", "rubric", "source", "status", "tools", "catalogHash", "grades", "findings"],
+      "additionalProperties": false,
+      "properties": {
+        "at": { "type": "string", "format": "date-time" },
+        "commit": { "description": "Commit of the default branch (or of the listed subfolder's branch) that was read.", "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "checker": { "description": "@isokron/mcp-check version.", "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?$" },
+        "rubric": { "type": ["string", "null"], "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "source": { "description": "How the tool definitions were found. repo-static: read from the source; nothing was run.", "const": "repo-static" },
+        "status": { "description": "ok: graded. no-tools: the static reader found no tool definitions.", "enum": ["ok", "no-tools"] },
+        "error": { "description": "Why the scan did not grade, when status is not ok.", "type": "string", "maxLength": 500 },
+        "fidelity": { "description": "exact (a committed list or snapshots), literal (literal definitions in the source), derived (reproduced from SDK registrations) or names (names only).", "enum": ["exact", "literal", "derived", "names", null] },
+        "tools": { "type": ["integer", "null"], "minimum": 0 },
+        "catalogHash": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+        "grades": {
+          "type": ["object", "null"],
+          "required": ["spec", "anthropic", "openai", "security", "quality", "surface"],
+          "additionalProperties": false,
+          "properties": {
+            "spec": { "$ref": "#/$defs/grade" },
+            "anthropic": { "$ref": "#/$defs/grade" },
+            "openai": { "$ref": "#/$defs/grade" },
+            "security": { "$ref": "#/$defs/grade" },
+            "quality": { "$ref": "#/$defs/grade" },
+            "surface": { "description": "null when there is no write surface to grade.", "$ref": "#/$defs/gradeOrNull" }
+          }
+        },
+        "findings": {
+          "description": "Counts by severity. high = the checker's blocking items, medium = attention, low = advice.",
+          "type": ["object", "null"],
+          "required": ["high", "medium", "low"],
+          "additionalProperties": false,
+          "properties": {
+            "high": { "type": "integer", "minimum": 0 },
+            "medium": { "type": "integer", "minimum": 0 },
+            "low": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "ci": {
+      "type": "object",
+      "required": ["verified", "checkedAt", "workflow"],
+      "additionalProperties": false,
+      "properties": {
+        "verified": { "description": "A workflow file on the default branch uses isokron-ai/mcp-check.", "type": "boolean" },
+        "checkedAt": { "type": "string", "format": "date-time" },
+        "workflow": { "description": "Path of the first workflow that uses it, or empty.", "type": "string", "pattern": "^(?:\\.github/workflows/[A-Za-z0-9._-]+\\.ya?ml)?$" }
+      }
+    },
+    "owner": {
+      "type": "object",
+      "required": ["verified", "checkedAt", "method"],
+      "additionalProperties": false,
+      "properties": {
+        "verified": { "description": "The default branch holds .github/mcp-check/registry.json naming this id.", "type": "boolean" },
+        "checkedAt": { "type": "string", "format": "date-time" },
+        "method": { "enum": ["", "claim-file"] }
+      }
+    }
+  },
+  "$defs": {
+    "grade": { "enum": ["A", "B", "C", "D", "F"] },
+    "gradeOrNull": { "enum": ["A", "B", "C", "D", "F", null] }
+  }
+}

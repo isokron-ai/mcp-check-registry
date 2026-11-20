@@ -1,0 +1,49 @@
+name: Submit your MCP server
+description: List an MCP server you maintain. It is graded from its source; nothing is run.
+title: "Submit: "
+labels: ["submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The registry lists MCP servers whose maintainers ask for it. When you open this issue, a workflow
+        reads the tool definitions from your repository's source with `@isokron/mcp-check`, replies here with
+        the grades and a fix list, and opens a pull request that adds your listing. Nothing in your repository
+        is installed, built or run, and nothing is written to it.
+  - type: input
+    id: repository
+    attributes:
+      label: Repository URL
+      description: The public GitHub repository, as https://github.com/owner/repo
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+  - type: input
+    id: path
+    attributes:
+      label: Subfolder path (optional)
+      description: For a monorepo, the folder that holds the server, such as packages/server. Leave empty for the whole repository.
+      placeholder: packages/server
+    validations:
+      required: false
+  - type: input
+    id: name
+    attributes:
+      label: Display name
+      description: How the listing is titled (80 characters at most).
+    validations:
+      required: true
+  - type: input
+    id: description
+    attributes:
+      label: One-line description
+      description: What the server does, in one line (200 characters at most).
+    validations:
+      required: true
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Permission
+      options:
+        - label: I maintain this repository or have the maintainer's permission
+          required: true
