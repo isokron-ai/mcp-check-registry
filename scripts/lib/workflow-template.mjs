@@ -25,8 +25,8 @@ export function workflowYaml(pins = PINS) {
 }
 
 /** The claim file: committing it to the default branch marks the listing owner-verified. */
-export function claimJson(id) {
-  return JSON.stringify({ id }, null, 2) + '\n';
+export function claimJson(id, path = '') {
+  return JSON.stringify(path ? { id, path } : { id }, null, 2) + '\n';
 }
 
 /** A branch name in a URL path: each part encoded, slashes kept. */
@@ -42,4 +42,4 @@ export function newFileUrl({ owner, repo, branch, filename, value }) {
 }
 
 export const addToCiUrl = ({ owner, repo, branch }) => newFileUrl({ owner, repo, branch, filename: WORKFLOW_PATH, value: workflowYaml() });
-export const claimUrl = ({ owner, repo, branch, id }) => newFileUrl({ owner, repo, branch, filename: CLAIM_PATH, value: claimJson(id) });
+export const claimUrl = ({ owner, repo, branch, id, path = '' }) => newFileUrl({ owner, repo, branch, filename: CLAIM_PATH, value: claimJson(id, path) });

@@ -37,11 +37,11 @@ export async function refresh({ root = ROOT, files = listEntryFiles(root), gh = 
       scanBlock = prev.scan;
     }
     let marks;
-    try { marks = await verify({ full: res.repo.id, branch: res.repo.defaultBranch, id: prev.id, gh }); } catch (e) {
+    try { marks = await verify({ full: res.repo.id, branch: res.repo.defaultBranch, id: prev.id, path: prev.path, gh }); } catch (e) {
       notes.push(prev.id + ': ci/owner check failed, kept the stored marks (' + String(e.message).slice(0, 200) + ')');
       marks = { ci: prev.ci, owner: prev.owner };
     }
-    const next = buildEntry({ fullName: full, path: prev.path, scan: scanBlock, ci: marks.ci, owner: marks.owner, existing: prev });
+    const next = buildEntry({ fullName: full, path: prev.path, defaultBranch: res.repo.defaultBranch, scan: scanBlock, ci: marks.ci, owner: marks.owner, existing: prev });
     if (materiallyChanged(prev, next)) changed[file] = entryText(next);
   }
   return { changed, notes, checked: files.length };

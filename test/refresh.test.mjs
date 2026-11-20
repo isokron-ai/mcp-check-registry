@@ -13,7 +13,7 @@ const marks = (v = false, at = AT) => ({
   owner: { verified: false, checkedAt: at, method: '' },
 });
 const stored = buildEntry({
-  fullName: 'acme/x', name: 'X', description: 'An MCP server.', submitted: { at: AT, by: 'acme', issue: 3 },
+  fullName: 'acme/x', defaultBranch: 'main', name: 'X', description: 'An MCP server.', submitted: { at: AT, by: 'acme', issue: 3 },
   scan: scanBlock(report, { commit: 'a'.repeat(40), at: AT }), ...marks(),
 });
 const files = ['servers/acme/x.json'];
@@ -61,4 +61,10 @@ test('the PR body lists changed files and strips mentions and markup from notes'
   const b = prBody({ changed: { 'servers/acme/x.json': '{}' }, notes: ['acme/x: @someone <b>`x`</b>'], checked: 3 });
   assert.match(b, /3 entries checked, 1 changed/);
   assert.ok(!/[@<>]/.test(b.split('Notes:')[1]));
+});
+
+test('a changed default branch rewrites the entry', async () => {
+  const scan = async ({ owner, repo }) => ({ repo: { id: owner + '/' + repo, owner, repo, defaultBranch: 'trunk', commit: 'b'.repeat(40) }, scan: scanBlock(report, { commit: 'b'.repeat(40), at: LATER }), top: [] });
+  const r = await refresh({ files, read, gh: {}, scan, verify: async () => marks(false, LATER) });
+  assert.equal(JSON.parse(r.changed['servers/acme/x.json']).defaultBranch, 'trunk');
 });

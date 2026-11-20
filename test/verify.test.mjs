@@ -19,14 +19,28 @@ test('the uses: matcher needs a real step, not a comment or another action', () 
   assert.ok(!usesMcpCheck('      - uses: isokron-ai/mcp-check\n'));
 });
 
-test('claim files: id must name this entry', () => {
+test('claim files: {"id"} for the repository, plus "path" for a folder listing', () => {
   assert.ok(claimNames('{"id":"acme/x"}', 'acme/x'));
   assert.ok(claimNames('{"id":"Acme/X"}', 'acme/x'));
-  assert.ok(claimNames('{"id":["acme/x/a","acme/x/b"]}', 'acme/x/b'));
+  assert.ok(claimNames('{"id":"acme/x","path":""}', 'acme/x'));
+  assert.ok(claimNames('{"id":"acme/x","path":"packages/server"}', 'acme/x', 'packages/server'));
+  assert.ok(claimNames('{"id":"acme/x","path":"./packages/server/"}', 'acme/x', 'packages/server'));
+  assert.ok(!claimNames('{"id":"acme/x"}', 'acme/x', 'packages/server'), 'folder listing needs the path');
+  assert.ok(!claimNames('{"id":"acme/x","path":"packages/other"}', 'acme/x', 'packages/server'));
+  assert.ok(!claimNames('{"id":"acme/x","path":"packages/server"}', 'acme/x'), 'root listing is not claimed by a folder claim');
+  assert.ok(!claimNames('{"id":["acme/x"]}', 'acme/x'), 'lists are not the claim shape');
+  assert.ok(!claimNames('{"id":"acme/x","path":3}', 'acme/x'));
   assert.ok(!claimNames('{"id":"acme/y"}', 'acme/x'));
   assert.ok(!claimNames('not json', 'acme/x'));
   assert.ok(!claimNames('null', 'acme/x'));
+  assert.ok(!claimNames('[{"id":"acme/x"}]', 'acme/x'));
   assert.ok(!claimNames('{"id":7}', 'acme/x'));
+});
+
+test('a folder listing is owner-verified only by a claim with its path', async () => {
+  const routes = { [API + '.github/mcp-check/registry.json?ref=main']: { body: '{"id":"acme/x","path":"packages/server"}' } };
+  assert.equal((await verify({ full: 'acme/x', branch: 'main', id: 'acme/x', path: 'packages/server', gh: ghWith(routes), now: NOW })).owner.verified, true);
+  assert.equal((await verify({ full: 'acme/x', branch: 'main', id: 'acme/x', gh: ghWith(routes), now: NOW })).owner.verified, false);
 });
 
 test('ci and owner verified from the default branch', async () => {
@@ -61,7 +75,7 @@ test('.yaml files count; nothing on the branch means not verified', async () => 
 });
 
 test('a claim for another id does not verify the owner', async () => {
-  const gh = ghWith({ [API + '.github/mcp-check/registry.json?ref=main']: { body: '{"id":"acme/x/other"}' } });
+  const gh = ghWith({ [API + '.github/mcp-check/registry.json?ref=main']: { body: '{"id":"acme/other"}' } });
   const r = await verify({ full: 'acme/x', branch: 'main', id: 'acme/x', gh, now: NOW });
   assert.equal(r.owner.verified, false);
 });

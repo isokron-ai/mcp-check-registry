@@ -20,13 +20,14 @@ if (!m || !opt('--name') || !opt('--description') || p.error) {
   process.exit(2);
 }
 const res = await scanRepo({ owner: m[1], repo: m[2], path: p.path });
-const id = entryId(res.repo.id, p.path);
-const marks = await verify({ full: res.repo.id, branch: res.repo.defaultBranch, id });
+const id = entryId(res.repo.id);
+const marks = await verify({ full: res.repo.id, branch: res.repo.defaultBranch, id, path: p.path });
 const file = entryFile(res.repo.id, p.path);
 const existing = existsSync(join(ROOT, file)) ? JSON.parse(readFileSync(join(ROOT, file), 'utf8')) : null;
 const entry = buildEntry({
   fullName: res.repo.id,
   path: p.path,
+  defaultBranch: res.repo.defaultBranch,
   name: opt('--name'),
   description: opt('--description'),
   submitted: { at: res.scan.at, by: opt('--by', 'rafe-walker'), issue: null },

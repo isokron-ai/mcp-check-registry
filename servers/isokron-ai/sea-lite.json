@@ -3,6 +3,7 @@
   "id": "isokron-ai/sea-lite",
   "repo": "https://github.com/isokron-ai/sea-lite",
   "path": "",
+  "defaultBranch": "main",
   "name": "SEA Lite",
   "description": "Fenced work queue for parallel coding agents: leased claims, path-scoped file locks, typed links and hash-chained history.",
   "submitted": {
@@ -11,7 +12,7 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T19:30:00Z",
+    "at": "2026-11-20T19:39:35Z",
     "commit": "b536cc18d7eeb43a16da3d3bb1f88edfa6df3eb3",
     "checker": "1.0.0",
     "rubric": null,
@@ -26,12 +27,12 @@
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:30:02Z",
+    "checkedAt": "2026-11-20T19:39:36Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:30:02Z",
+    "checkedAt": "2026-11-20T19:39:36Z",
     "method": ""
   }
 }

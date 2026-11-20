@@ -38,17 +38,17 @@ test('the reply starts with the marker and has at most five findings', () => {
   assert.ok(items.length >= 1 && items.length <= 5);
 });
 
-test('check links carry the registry UTM tags', () => {
+test('isokron.ai links carry exactly the bot tags', () => {
   const md = result();
   const links = [...md.matchAll(/\((https:\/\/isokron\.ai\/[^)\s]+)\)/g)].map((m) => m[1]);
   assert.ok(links.some((l) => l.includes('/mcp-check/checks/openai-hints-explicit?')));
   for (const l of links) {
     const u = new URL(l);
-    assert.equal(u.searchParams.get('utm_source'), 'github');
-    assert.equal(u.searchParams.get('utm_medium'), 'registry');
-    assert.equal(u.searchParams.get('utm_campaign'), 'registry');
+    assert.deepEqual([...u.searchParams.keys()], ['utm_source', 'utm_medium']);
+    assert.equal(u.searchParams.get('utm_source'), 'mcp-check-registry-bot');
+    assert.equal(u.searchParams.get('utm_medium'), 'action');
   }
-  assert.ok(md.includes('https://isokron.ai/mcp-check/registry/isokron-ai/kronicle-lite?utm_source=github&utm_medium=registry&utm_campaign=registry'));
+  assert.ok(md.includes('https://isokron.ai/mcp-check/registry/isokron-ai/kronicle-lite?utm_source=mcp-check-registry-bot&utm_medium=action'));
 });
 
 test('the one-click link in the reply installs exactly the C1 workflow', () => {
@@ -84,11 +84,11 @@ test('hostile names and tool names cannot inject Markdown, links or mentions', (
   assert.ok(!outside.includes('<script>') && !outside.includes('<img'), 'no raw HTML outside code spans');
 });
 
-test('subfolder listings name the folder and use the slug listing URL', () => {
-  const md = result({ path: 'packages/server' });
-  assert.match(md, /folder `packages\/server`/);
-  assert.ok(md.includes('/mcp-check/registry/isokron-ai/kronicle-lite__packages-server?'));
-  assert.ok(md.includes('"id": "isokron-ai/kronicle-lite/packages/server"'));
+test('folder listings name the folder, use the slug listing URL and claim with a path', () => {
+  const md = result({ path: 'packages/Server_X' });
+  assert.match(md, /folder `packages\/Server_X`/);
+  assert.ok(md.includes('/mcp-check/registry/isokron-ai/kronicle-lite__packages-server-x?'));
+  assert.ok(md.includes('{\n  "id": "isokron-ai/kronicle-lite",\n  "path": "packages/Server_X"\n}'));
 });
 
 test('public copy rules: no email addresses, no prices', () => {

@@ -47,7 +47,8 @@ test('branch names with slashes and odd characters are encoded per segment', () 
 
 test('the claim file names the id and round-trips through its link', () => {
   assert.deepEqual(JSON.parse(claimJson('acme/x')), { id: 'acme/x' });
-  const u = new URL(claimUrl({ owner: 'acme', repo: 'x', branch: 'main', id: 'acme/x/packages/server' }));
+  assert.deepEqual(JSON.parse(claimJson('acme/x', 'packages/server')), { id: 'acme/x', path: 'packages/server' });
+  const u = new URL(claimUrl({ owner: 'acme', repo: 'x', branch: 'main', id: 'acme/x', path: 'packages/server' }));
   assert.equal(u.searchParams.get('filename'), '.github/mcp-check/registry.json');
-  assert.deepEqual(JSON.parse(u.searchParams.get('value')), { id: 'acme/x/packages/server' });
+  assert.deepEqual(JSON.parse(u.searchParams.get('value')), { id: 'acme/x', path: 'packages/server' });
 });

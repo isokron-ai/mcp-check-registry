@@ -8,8 +8,12 @@ export const LISTING_BASE = 'https://isokron.ai/mcp-check/registry';
 export const CHECKS_BASE = 'https://isokron.ai/mcp-check/checks';
 export const SITE_HOME = 'https://isokron.ai/mcp-check';
 
-/** Channel tags on every link to isokron.ai from this repository. */
-export const UTM = { utm_source: 'github', utm_medium: 'registry', utm_campaign: 'registry' };
+/**
+ * Channel tags on links to isokron.ai (isokron-site docs/LINK-TAGS.md: exactly two keys).
+ * BOT: the submission reply and the entry pull request. README: this repository's docs and forms.
+ */
+export const UTM_BOT = { utm_source: 'mcp-check-registry-bot', utm_medium: 'action' };
+export const UTM_README = { utm_source: 'mcp-check-registry-readme', utm_medium: 'readme' };
 
 /**
  * Action pins for the one-click workflow (contract C1).

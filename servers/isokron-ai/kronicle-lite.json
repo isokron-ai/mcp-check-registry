@@ -3,6 +3,7 @@
   "id": "isokron-ai/kronicle-lite",
   "repo": "https://github.com/isokron-ai/kronicle-lite",
   "path": "",
+  "defaultBranch": "main",
   "name": "Kronicle Lite",
   "description": "Local-first MCP server: a hash-chained document store, signed retrieval receipts and an orient protocol for stale agent beliefs.",
   "submitted": {
@@ -11,7 +12,7 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T19:29:56Z",
+    "at": "2026-11-20T19:39:31Z",
     "commit": "6df19640ea1c63aabdbb08aa6135915e5fc0cc63",
     "checker": "1.0.0",
     "rubric": "2.1.0",
@@ -36,12 +37,12 @@
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:29:58Z",
+    "checkedAt": "2026-11-20T19:39:33Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:29:58Z",
+    "checkedAt": "2026-11-20T19:39:33Z",
     "method": ""
   }
 }

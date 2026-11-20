@@ -3,6 +3,7 @@
   "id": "isokron-ai/mcp-check",
   "repo": "https://github.com/isokron-ai/mcp-check",
   "path": "",
+  "defaultBranch": "main",
   "name": "IsoKron MCP check",
   "description": "Grades an MCP server's tool list against the MCP spec and the Claude and ChatGPT directory rules. CLI, Action and MCP server.",
   "submitted": {
@@ -11,7 +12,7 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T19:30:05Z",
+    "at": "2026-11-20T19:39:39Z",
     "commit": "0dc49b7383e15c4529ac41bbfb6f6517c6443e33",
     "checker": "1.0.0",
     "rubric": null,
@@ -26,12 +27,12 @@
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:30:06Z",
+    "checkedAt": "2026-11-20T19:39:40Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T19:30:06Z",
+    "checkedAt": "2026-11-20T19:39:40Z",
     "method": ""
   }
 }

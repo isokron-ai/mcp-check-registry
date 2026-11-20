@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// verify.mjs <owner/repo> [--id owner/repo[/path]]
+// verify.mjs <owner/repo> [--path folder]
 // Computes the ci and owner blocks of a registry entry (contract C2) from files on the default branch:
 //   ci     any .github/workflows/*.yml|yaml that has a step "uses: isokron-ai/mcp-check@..."
-//   owner  .github/mcp-check/registry.json exists and its id names this entry
+//   owner  .github/mcp-check/registry.json exists and names this entry: {"id": "owner/repo"},
+//          plus "path": "<folder>" for a folder listing
 // Reads public files through GitHub's contents API only. Nothing is written anywhere.
 import { pathToFileURL } from 'node:url';
 import { github } from './lib/github.mjs';
@@ -14,20 +15,26 @@ const MAX_WORKFLOWS = 50;
 /** True when a workflow file's text has a step that uses the Action (comments don't count). */
 export const usesMcpCheck = (yaml) => USES_RE.test(String(yaml));
 
-/** True when the claim file's JSON names this id (case-insensitive; "id" may also be a list). */
-export function claimNames(text, id) {
+const normPath = (p) => String(p).trim().replace(/^\.?\/+/, '').replace(/\/+$/, '').toLowerCase();
+
+/**
+ * True when the claim file is {"id": "<owner/repo>"} for this entry, plus "path": "<folder>" when
+ * the entry is a folder listing. Case-insensitive; leading "./" and slashes around the path are ignored.
+ */
+export function claimNames(text, id, path = '') {
   let j;
   try { j = JSON.parse(text); } catch { return false; }
-  if (!j || typeof j !== 'object') return false;
-  const ids = [].concat(j.id ?? []).filter((x) => typeof x === 'string');
-  return ids.some((x) => x.trim().toLowerCase() === id.toLowerCase());
+  if (!j || typeof j !== 'object' || Array.isArray(j) || typeof j.id !== 'string') return false;
+  if (j.id.trim().toLowerCase() !== id.toLowerCase()) return false;
+  if (j.path !== undefined && typeof j.path !== 'string') return false;
+  return normPath(j.path ?? '') === normPath(path);
 }
 
 /**
  * Returns { ci, owner }. GitHub errors other than "not found" are thrown, so a caller can keep
  * the previous values instead of dropping a mark on a transient failure.
  */
-export async function verify({ full, branch, id, gh = github(), now = () => new Date() }) {
+export async function verify({ full, branch, id, path = '', gh = github(), now = () => new Date() }) {
   const at = now().toISOString().replace(/\.\d{3}Z$/, 'Z');
   const ci = { verified: false, checkedAt: at, workflow: '' };
   const dir = await gh.listDir(full, '.github/workflows', branch);
@@ -42,19 +49,19 @@ export async function verify({ full, branch, id, gh = github(), now = () => new 
   const owner = { verified: false, checkedAt: at, method: '' };
   let claim = null;
   try { claim = await gh.getFile(full, CLAIM_PATH, branch, 64 * 1024); } catch (e) { if (e.status !== 413) throw e; }
-  if (claim != null && claimNames(claim, id)) { owner.verified = true; owner.method = 'claim-file'; }
+  if (claim != null && claimNames(claim, id, path)) { owner.verified = true; owner.method = 'claim-file'; }
   return { ci, owner };
 }
 
 async function main(argv) {
   const args = argv.slice(2);
   const full = args[0];
-  const idAt = args.indexOf('--id');
-  if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(full || '')) { process.stderr.write('usage: verify.mjs <owner/repo> [--id owner/repo[/path]]\n'); return 2; }
+  const pathAt = args.indexOf('--path');
+  if (!/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(full || '')) { process.stderr.write('usage: verify.mjs <owner/repo> [--path folder]\n'); return 2; }
   const gh = github();
   const repo = await gh.getRepo(full);
   if (!repo) { process.stderr.write('verify: ' + full + ' not found\n'); return 3; }
-  const out = await verify({ full: repo.full_name, branch: repo.default_branch, id: idAt > 0 ? args[idAt + 1] : repo.full_name, gh });
+  const out = await verify({ full: repo.full_name, branch: repo.default_branch, id: repo.full_name.toLowerCase(), path: pathAt > 0 ? args[pathAt + 1] : '', gh });
   process.stdout.write(JSON.stringify(out, null, 2) + '\n');
   return 0;
 }

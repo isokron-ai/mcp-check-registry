@@ -7,7 +7,7 @@
 // name) is escaped or put in a code span. Check titles come from the checker's own rubric.
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { COMMENT_MARKER, CHECKS_BASE, SITE_HOME, UTM, SECTIONS, SECTION_LABELS, WORKFLOW_PATH, CLAIM_PATH } from './lib/constants.mjs';
+import { COMMENT_MARKER, CHECKS_BASE, SITE_HOME, UTM_BOT as UTM, SECTIONS, SECTION_LABELS, WORKFLOW_PATH, CLAIM_PATH } from './lib/constants.mjs';
 import { mdText, mdCode, tagged } from './lib/text.mjs';
 import { workflowYaml, claimJson, addToCiUrl, claimUrl } from './lib/workflow-template.mjs';
 import { entryId, listingUrl } from './entry.mjs';
@@ -40,7 +40,7 @@ function gradesTable(scan) {
   return rows.join('\n');
 }
 
-function ciAndClaim({ full, owner, repo, branch, id, ci, ownerMark }) {
+function ciAndClaim({ full, owner, repo, branch, id, path, ci, ownerMark }) {
   const yaml = workflowYaml();
   const out = [];
   out.push('### Add mcp-check to your CI');
@@ -68,10 +68,10 @@ function ciAndClaim({ full, owner, repo, branch, id, ci, ownerMark }) {
   if (ownerMark?.verified) {
     out.push('Your default branch has the claim file, so the listing shows **Owner-verified**.');
   } else {
-    out.push('Commit this file as ' + mdCode(CLAIM_PATH) + ' on ' + mdCode(branch) + ' ([open it pre-filled](' + claimUrl({ owner, repo, branch, id }) + ')):');
+    out.push('Commit this file as ' + mdCode(CLAIM_PATH) + ' on ' + mdCode(branch) + ' ([open it pre-filled](' + claimUrl({ owner, repo, branch, id, path }) + ')):');
     out.push('');
     out.push('```json');
-    out.push(claimJson(id).trimEnd());
+    out.push(claimJson(id, path).trimEnd());
     out.push('```');
     out.push('');
     out.push('The listing shows **Owner-verified** after the next nightly check. There is no sign-in and no app to install: the file on your default branch is the claim. Delete it to drop the mark.');
@@ -82,10 +82,10 @@ function ciAndClaim({ full, owner, repo, branch, id, ci, ownerMark }) {
 /** The reply for a graded repository. */
 export function renderResult({ repo, path = '', name, scan, top, ci = null, owner: ownerMark = null, pr = null, existing = false }) {
   const full = repo.id;
-  const id = entryId(full, path);
+  const id = entryId(full);
   const listing = tagged(listingUrl(full, path), UTM);
   const out = [COMMENT_MARKER];
-  out.push('## mcp-check results for ' + mdCode(id));
+  out.push('## mcp-check results for ' + mdCode(id + (path ? ' (' + path + ')' : '')));
   out.push('');
   out.push('**' + mdText(name, 80) + '**: ' + scan.tools + (scan.tools === 1 ? ' tool' : ' tools') + ' read from ' + commitLink(full, scan.commit) + ' on ' + mdCode(repo.defaultBranch) + (path ? ', folder ' + mdCode(path) : '') + ', ' + (FIDELITY_WORD[scan.fidelity] || 'from the source') + '.');
   out.push('');
@@ -105,7 +105,7 @@ export function renderResult({ repo, path = '', name, scan, top, ci = null, owne
     out.push('Each link explains the check and how to fix it. The full report is on the [checker page](' + tagged(SITE_HOME, UTM) + ') or from `npx @isokron/mcp-check --repo github.com/' + full + '`.');
     out.push('');
   }
-  out.push(...ciAndClaim({ full, owner: repo.owner, repo: repo.repo, branch: repo.defaultBranch, id, ci, ownerMark }));
+  out.push(...ciAndClaim({ full, owner: repo.owner, repo: repo.repo, branch: repo.defaultBranch, id, path, ci, ownerMark }));
   out.push('');
   out.push('### Your listing');
   out.push('');

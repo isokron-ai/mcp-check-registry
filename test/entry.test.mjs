@@ -9,6 +9,7 @@ const AT = '2026-11-20T12:00:00Z';
 const SHA = 'a'.repeat(40);
 const base = () => ({
   fullName: 'Acme/Weather-MCP',
+  defaultBranch: 'main',
   name: 'Weather MCP',
   description: 'Forecasts and alerts for agents.',
   submitted: { at: AT, by: 'octo-dev', issue: 7 },
@@ -19,27 +20,29 @@ const base = () => ({
 
 test('a built entry matches contract C2 and the schema', () => {
   const e = buildEntry(base());
-  assert.deepEqual(Object.keys(e), ['schema', 'id', 'repo', 'path', 'name', 'description', 'submitted', 'scan', 'ci', 'owner']);
-  assert.equal(e.id, 'Acme/Weather-MCP');
-  assert.equal(e.repo, 'https://github.com/Acme/Weather-MCP');
+  assert.deepEqual(Object.keys(e), ['schema', 'id', 'repo', 'path', 'defaultBranch', 'name', 'description', 'submitted', 'scan', 'ci', 'owner']);
+  assert.equal(e.id, 'acme/weather-mcp');
+  assert.equal(e.repo, 'https://github.com/acme/weather-mcp');
+  assert.equal(e.defaultBranch, 'main');
   assert.equal(e.scan.source, 'repo-static');
   assert.match(e.scan.catalogHash, /^sha256:[0-9a-f]{64}$/);
   assert.deepEqual(Object.keys(e.scan.grades), ['spec', 'anthropic', 'openai', 'security', 'quality', 'surface']);
   assert.deepEqual(validate(e, loadSchema()), []);
 });
 
-test('file names and listing URLs are lowercase; subfolders get a slug suffix', () => {
+test('ids, file names and listing URLs are lower-case; folders get a slug suffix', () => {
+  assert.equal(entryId('Acme/Weather-MCP'), 'acme/weather-mcp');
   assert.equal(entryFile('Acme/Weather-MCP'), 'servers/acme/weather-mcp.json');
-  assert.equal(entryFile('Acme/mono', 'packages/Server-X'), 'servers/acme/mono__packages-server-x.json');
-  assert.equal(entryId('Acme/mono', 'packages/Server-X'), 'Acme/mono/packages/Server-X');
+  assert.equal(entryFile('Acme/mono', 'packages/Server_X'), 'servers/acme/mono__packages-server-x.json');
   assert.equal(listingUrl('Acme/Weather-MCP'), 'https://isokron.ai/mcp-check/registry/acme/weather-mcp');
-  assert.equal(listingUrl('Acme/mono', 'packages/@scope/x'), 'https://isokron.ai/mcp-check/registry/acme/mono__packages-scope-x');
-  assert.equal(pathSlug('../a//b'), 'a-b');
+  assert.equal(listingUrl('Acme/mono', 'packages/@scope/x.y'), 'https://isokron.ai/mcp-check/registry/acme/mono__packages--scope-x-y');
+  assert.equal(pathSlug('Packages/Server_X.v2'), 'packages-server-x-v2');
 });
 
-test('a subfolder entry validates', () => {
-  const e = buildEntry({ ...base(), path: 'packages/server' });
-  assert.equal(e.id, 'Acme/Weather-MCP/packages/server');
+test('a folder entry keeps id owner/repo and the folder in path', () => {
+  const e = buildEntry({ ...base(), path: 'packages/Server' });
+  assert.equal(e.id, 'acme/weather-mcp');
+  assert.equal(e.path, 'packages/Server');
 });
 
 test('an update keeps the original submission record', () => {
@@ -56,6 +59,10 @@ test('the schema rejects what the contract does not allow', () => {
     (e) => { e.scan.grades.spec = null; },
     (e) => { e.extra = 1; },
     (e) => { e.id = 'acme'; },
+    (e) => { e.id = 'Acme/x'; },
+    (e) => { e.id = 'acme/x/packages/server'; },
+    (e) => { delete e.defaultBranch; },
+    (e) => { e.defaultBranch = ''; },
     (e) => { e.repo = 'https://gitlab.com/acme/x'; },
     (e) => { e.scan.commit = 'main'; },
     (e) => { e.scan.source = 'live'; },

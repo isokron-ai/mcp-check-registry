@@ -9,13 +9,13 @@ import { LISTING_BASE } from './lib/constants.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
-/** "packages/server-x" -> "packages-server-x": lowercase, one segment, safe in a file name and a URL. */
+/** Folder path -> page and file slug: lower-cased, every character outside [a-z0-9] turned into "-". */
 export function pathSlug(path) {
-  return String(path).toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/^[-.]+|[-.]+$/g, '').replace(/-{2,}/g, '-');
+  return String(path).toLowerCase().replace(/[^a-z0-9]/g, '-');
 }
 
-/** Entry id: owner/repo, plus /path for a subfolder listing. */
-export const entryId = (fullName, path = '') => fullName + (path ? '/' + path : '');
+/** Entry id: lower-case owner/repo, for a folder listing too (the folder is in "path"). */
+export const entryId = (fullName) => String(fullName).toLowerCase();
 
 /** servers/<owner>/<repo>[__<slug>].json, lowercase. */
 export function entryFile(fullName, path = '') {
@@ -33,12 +33,13 @@ export function listingUrl(fullName, path = '') {
  * Builds the entry. With `existing`, the original submission record is kept; name and description
  * come from the newest submission. Throws when the result does not match the schema.
  */
-export function buildEntry({ fullName, path = '', name, description, submitted, scan, ci, owner, existing = null, schema = loadSchema() }) {
+export function buildEntry({ fullName, path = '', defaultBranch, name, description, submitted, scan, ci, owner, existing = null, schema = loadSchema() }) {
   const entry = {
     schema: 1,
-    id: entryId(fullName, path),
-    repo: 'https://github.com/' + fullName,
+    id: entryId(fullName),
+    repo: 'https://github.com/' + entryId(fullName),
     path,
+    defaultBranch: defaultBranch ?? existing?.defaultBranch,
     name: name ?? existing?.name,
     description: description ?? existing?.description,
     submitted: existing?.submitted ?? submitted,
@@ -79,7 +80,7 @@ export function listEntryFiles(root = ROOT) {
   return out;
 }
 
-/** Validates every entry file: schema, file name and id agree, no duplicate ids. Returns error strings. */
+/** Validates every entry file: schema, file name and id agree, no duplicate listings. Returns error strings. */
 export function checkAll(root = ROOT) {
   const schema = loadSchema();
   const errors = [];
@@ -89,12 +90,10 @@ export function checkAll(root = ROOT) {
     try { e = JSON.parse(readFileSync(join(root, f), 'utf8')); } catch (err) { errors.push(f + ': not JSON (' + err.message + ')'); continue; }
     for (const x of validate(e, schema)) errors.push(f + ': ' + x);
     if (typeof e.id === 'string' && typeof e.path === 'string') {
-      const full = e.id.split('/').slice(0, 2).join('/');
-      if (entryFile(full, e.path) !== f.split('\\').join('/')) errors.push(f + ': file name should be ' + entryFile(full, e.path));
-      if (e.id !== entryId(full, e.path)) errors.push(f + ': id and path disagree');
-      if (e.repo !== 'https://github.com/' + full) errors.push(f + ': repo and id disagree');
-      const k = e.id.toLowerCase();
-      if (seen.has(k)) errors.push(f + ': same id as ' + seen.get(k)); else seen.set(k, f);
+      if (entryFile(e.id, e.path) !== f.split('\\').join('/')) errors.push(f + ': file name should be ' + entryFile(e.id, e.path));
+      if (e.repo !== 'https://github.com/' + e.id) errors.push(f + ': repo and id disagree');
+      const k = e.id + '\n' + e.path.toLowerCase();
+      if (seen.has(k)) errors.push(f + ': same listing as ' + seen.get(k)); else seen.set(k, f);
     }
   }
   return errors;

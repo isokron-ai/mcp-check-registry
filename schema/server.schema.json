@@ -2,20 +2,20 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/isokron-ai/mcp-check-registry/schema/server.schema.json",
   "title": "MCP check registry entry",
-  "description": "One listed MCP server: servers/<owner>/<repo>.json, with a __<path-slug> suffix when a subfolder is listed. File names are lowercase; id keeps GitHub's spelling.",
+  "description": "One listed MCP server: servers/<owner>/<repo>.json, or servers/<owner>/<repo>__<path-slug>.json for a folder listing, where path-slug is the folder path lower-cased with every character outside [a-z0-9] turned into '-'. Everything is lower-case.",
   "type": "object",
-  "required": ["schema", "id", "repo", "path", "name", "description", "submitted", "scan", "ci", "owner"],
+  "required": ["schema", "id", "repo", "path", "defaultBranch", "name", "description", "submitted", "scan", "ci", "owner"],
   "additionalProperties": false,
   "properties": {
     "schema": { "const": 1 },
     "id": {
-      "description": "owner/repo, or owner/repo/subfolder for a subfolder listing. The claim file names this.",
+      "description": "Lower-case owner/repo, for a folder listing too (the folder is in path). The claim file names this.",
       "type": "string",
-      "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/[A-Za-z0-9._-]{1,100}(?:/[A-Za-z0-9._@-]+)*$",
-      "maxLength": 340
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,38})/[a-z0-9._-]{1,100}$"
     },
-    "repo": { "type": "string", "pattern": "^https://github\\.com/[A-Za-z0-9-]+/[A-Za-z0-9._-]+$" },
+    "repo": { "description": "https://github.com/ plus the id.", "type": "string", "pattern": "^https://github\\.com/[a-z0-9-]+/[a-z0-9._-]+$" },
     "path": { "description": "Subfolder of the server inside the repository; empty for the root.", "type": "string", "pattern": "^(?:[A-Za-z0-9._@-]+(?:/[A-Za-z0-9._@-]+)*)?$", "maxLength": 200 },
+    "defaultBranch": { "description": "The repository's default branch, from the GitHub API, as GitHub spells it. Used for the one-click Add-to-CI and claim links.", "type": "string", "minLength": 1, "maxLength": 255 },
     "name": { "type": "string", "minLength": 1, "maxLength": 80 },
     "description": { "type": "string", "minLength": 1, "maxLength": 200 },
     "submitted": {
@@ -84,7 +84,7 @@
       "required": ["verified", "checkedAt", "method"],
       "additionalProperties": false,
       "properties": {
-        "verified": { "description": "The default branch holds .github/mcp-check/registry.json naming this id.", "type": "boolean" },
+        "verified": { "description": "The default branch holds .github/mcp-check/registry.json: {\"id\": \"<owner/repo>\"}, plus \"path\": \"<folder>\" for a folder listing.", "type": "boolean" },
         "checkedAt": { "type": "string", "format": "date-time" },
         "method": { "enum": ["", "claim-file"] }
       }

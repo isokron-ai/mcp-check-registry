@@ -8,10 +8,11 @@ import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { github as makeGithub, commitFiles } from './lib/github.mjs';
 import { parseFormBody, validateSubmission } from './lib/form.mjs';
-import { REGISTRY_REPO, COMMENT_MARKER, SUBMISSION_LABEL } from './lib/constants.mjs';
+import { REGISTRY_REPO, COMMENT_MARKER, SUBMISSION_LABEL, UTM_BOT } from './lib/constants.mjs';
 import { scanRepo as realScan, ScanError } from './scan.mjs';
 import { verify as realVerify } from './verify.mjs';
-import { buildEntry, entryFile, entryId, entryText } from './entry.mjs';
+import { buildEntry, entryFile, entryId, entryText, listingUrl } from './entry.mjs';
+import { tagged } from './lib/text.mjs';
 import { renderResult, renderError } from './comment.mjs';
 
 export const LABELS = { ok: 'scanned', fix: 'needs-fix', noTools: 'no-tools', error: 'scan-error', review: 'needs-review' };
@@ -70,15 +71,15 @@ export async function handle(event, { gh = makeGithub(), scan = realScan, verify
   }
 
   const full = res.repo.id;
-  const id = entryId(full, submission.path);
+  const id = entryId(full);
   const file = entryFile(full, submission.path);
-  const marks = await verify({ full, branch: res.repo.defaultBranch, id, gh });
+  const marks = await verify({ full, branch: res.repo.defaultBranch, id, path: submission.path, gh });
 
   let existing = null;
   const prevText = await gh.getFile(registry, file, 'main');
   if (prevText != null) {
     try { existing = JSON.parse(prevText); } catch { existing = null; }
-    if (!existing || String(existing.id).toLowerCase() !== id.toLowerCase()) {
+    if (!existing || existing.id !== id || String(existing.path).toLowerCase() !== submission.path.toLowerCase()) {
       await reply(renderError({ kind: 'conflict', message: 'Another listing already uses the file ' + file + '.' }));
       await setLabels(gh, registry, n, LABELS.review);
       return { outcome: 'conflict' };
@@ -88,6 +89,7 @@ export async function handle(event, { gh = makeGithub(), scan = realScan, verify
   const entry = buildEntry({
     fullName: full,
     path: submission.path,
+    defaultBranch: res.repo.defaultBranch,
     name: submission.name,
     description: submission.description,
     submitted: { at: iso(issue.created_at || now()), by: issue.user.login, issue: n },
@@ -105,7 +107,8 @@ export async function handle(event, { gh = makeGithub(), scan = realScan, verify
     for (const f of (cmp && cmp.files) || []) if (/^servers\/.+\.json$/.test(f.filename) && f.filename !== file && f.status === 'added') files[f.filename] = null;
   }
   const verb = existing ? 'Update' : 'Add';
-  await commitFiles(gh, registry, { base: 'main', branch, files, message: verb + ' ' + id + ' (submission #' + n + ')' });
+  const label = id + (submission.path ? ' (' + submission.path + ')' : '');
+  await commitFiles(gh, registry, { base: 'main', branch, files, message: verb + ' ' + label + ' (submission #' + n + ')' });
 
   const [owner] = registry.split('/');
   const open = (await gh.listPulls(registry, { state: 'open', head: owner + ':' + branch })) || [];
@@ -117,11 +120,13 @@ export async function handle(event, { gh = makeGithub(), scan = realScan, verify
     '- CI-verified: ' + (marks.ci.verified ? 'yes (`' + marks.ci.workflow + '`)' : 'no') + '. Owner-verified: ' + (marks.owner.verified ? 'yes' : 'no') + '.',
     '- Submitter ' + (isOwner ? 'is the repository owner.' : 'is not the repository owner; the form box is ticked. Check before merging.'),
     '',
+    '- Listing: ' + tagged(listingUrl(full, submission.path), UTM_BOT),
+    '',
     'Before merging: `npm test` passes locally, the name and description are fit to publish.',
   ].join('\n');
   let pr;
-  if (open.length) { pr = open[0].number; await gh.updatePull(registry, pr, { title: verb + ' ' + id, body }); } else {
-    const created = await gh.createPull(registry, { title: verb + ' ' + id, head: branch, base: 'main', body, maintainer_can_modify: true });
+  if (open.length) { pr = open[0].number; await gh.updatePull(registry, pr, { title: verb + ' ' + label, body }); } else {
+    const created = await gh.createPull(registry, { title: verb + ' ' + label, head: branch, base: 'main', body, maintainer_can_modify: true });
     pr = created.number;
   }
   await reply(renderResult({ repo: res.repo, path: submission.path, name: entry.name, scan: res.scan, top: res.top, ci: marks.ci, owner: marks.owner, pr, existing: !!existing }));

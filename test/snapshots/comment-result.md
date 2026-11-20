@@ -18,13 +18,13 @@ Findings: 9 high, 9 medium, 48 low.
 
 ### Top findings
 
-1. **[openai-hints-explicit](https://isokron.ai/mcp-check/checks/openai-hints-explicit?utm_source=github&utm_medium=registry&utm_campaign=registry)** (blocking): readOnlyHint, destructiveHint and openWorldHint are explicit booleans. 7 tools: `get_system_state`, `audit_assumptions`, `recall` and 4 more.
-2. **[anthropic-description](https://isokron.ai/mcp-check/checks/anthropic-description?utm_source=github&utm_medium=registry&utm_campaign=registry)** (blocking): Description says what the tool does and when to use it. 1 tool: `apply`.
-3. **[openai-description](https://isokron.ai/mcp-check/checks/openai-description?utm_source=github&utm_medium=registry&utm_campaign=registry)** (blocking): Every tool has a non-empty description. 1 tool: `apply`.
-4. **[openai-retry](https://isokron.ai/mcp-check/checks/openai-retry?utm_source=github&utm_medium=registry&utm_campaign=registry)** (attention): Write tools say whether a retry repeats the effect. 5 tools: `checkpoint_chain`, `put_document`, `supersede_block` and 2 more.
-5. **[anthropic-hint-platforms-differ](https://isokron.ai/mcp-check/checks/anthropic-hint-platforms-differ?utm_source=github&utm_medium=registry&utm_campaign=registry)** (attention): destructiveHint: false on a write: the platforms word this differently. 2 tools: `checkpoint_chain`, `audit_record`.
+1. **[openai-hints-explicit](https://isokron.ai/mcp-check/checks/openai-hints-explicit?utm_source=mcp-check-registry-bot&utm_medium=action)** (blocking): readOnlyHint, destructiveHint and openWorldHint are explicit booleans. 7 tools: `get_system_state`, `audit_assumptions`, `recall` and 4 more.
+2. **[anthropic-description](https://isokron.ai/mcp-check/checks/anthropic-description?utm_source=mcp-check-registry-bot&utm_medium=action)** (blocking): Description says what the tool does and when to use it. 1 tool: `apply`.
+3. **[openai-description](https://isokron.ai/mcp-check/checks/openai-description?utm_source=mcp-check-registry-bot&utm_medium=action)** (blocking): Every tool has a non-empty description. 1 tool: `apply`.
+4. **[openai-retry](https://isokron.ai/mcp-check/checks/openai-retry?utm_source=mcp-check-registry-bot&utm_medium=action)** (attention): Write tools say whether a retry repeats the effect. 5 tools: `checkpoint_chain`, `put_document`, `supersede_block` and 2 more.
+5. **[anthropic-hint-platforms-differ](https://isokron.ai/mcp-check/checks/anthropic-hint-platforms-differ?utm_source=mcp-check-registry-bot&utm_medium=action)** (attention): destructiveHint: false on a write: the platforms word this differently. 2 tools: `checkpoint_chain`, `audit_record`.
 
-Each link explains the check and how to fix it. The full report is on the [checker page](https://isokron.ai/mcp-check?utm_source=github&utm_medium=registry&utm_campaign=registry) or from `npx @isokron/mcp-check --repo github.com/isokron-ai/kronicle-lite`.
+Each link explains the check and how to fix it. The full report is on the [checker page](https://isokron.ai/mcp-check?utm_source=mcp-check-registry-bot&utm_medium=action) or from `npx @isokron/mcp-check --repo github.com/isokron-ai/kronicle-lite`.
 
 ### Add mcp-check to your CI
 
@@ -69,5 +69,5 @@ The listing shows **Owner-verified** after the next nightly check. There is no s
 
 ### Your listing
 
-Your listing will be at https://isokron.ai/mcp-check/registry/isokron-ai/kronicle-lite?utm_source=github&utm_medium=registry&utm_campaign=registry once #12 is merged and the site rebuilds.
+Your listing will be at https://isokron.ai/mcp-check/registry/isokron-ai/kronicle-lite?utm_source=mcp-check-registry-bot&utm_medium=action once #12 is merged and the site rebuilds.
 Grades refresh nightly from your default branch. Edit this issue to scan again now. To remove the listing, open a removal request in this repository; it is honored for maintainers.

@@ -11,4 +11,4 @@ You can still be listed:
 
 In your own CI, the Action can also grade the live list: set `tools-file: tools.json`, or `command:` with the command that starts your server.
 
-How grading works: https://isokron.ai/mcp-check?utm_source=github&utm_medium=registry&utm_campaign=registry
+How grading works: https://isokron.ai/mcp-check?utm_source=mcp-check-registry-bot&utm_medium=action

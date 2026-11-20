@@ -2,7 +2,7 @@
 
 A public list of MCP servers whose maintainers asked to be listed. Each listing shows how the server's tools grade against the MCP specification, the Claude and ChatGPT directory rules, hidden-instruction patterns, schema quality and write-surface design, plus two marks: **CI-verified** and **Owner-verified**.
 
-The listings are published at [isokron.ai/mcp-check/registry](https://isokron.ai/mcp-check/registry?utm_source=github&utm_medium=registry&utm_campaign=registry). This repository holds the data (`servers/`), the submission form and the workflows that grade and refresh it.
+The listings are published at [isokron.ai/mcp-check/registry](https://isokron.ai/mcp-check/registry?utm_source=mcp-check-registry-readme&utm_medium=readme). This repository holds the data (`servers/`), the submission form and the workflows that grade and refresh it.
 
 ## Who can list a server
 
@@ -12,7 +12,7 @@ To list a server, open a [Submit your MCP server](../../issues/new?template=subm
 
 ## How grading works
 
-The submission workflow reads the tool definitions from the repository's source with [`@isokron/mcp-check`](https://github.com/isokron-ai/mcp-check), the same engine as the [web checker](https://isokron.ai/mcp-check?utm_source=github&utm_medium=registry&utm_campaign=registry), the CLI and the GitHub Action. It reads the default branch at a fixed commit, as text:
+The submission workflow reads the tool definitions from the repository's source with [`@isokron/mcp-check`](https://github.com/isokron-ai/mcp-check), the same engine as the [web checker](https://isokron.ai/mcp-check?utm_source=mcp-check-registry-readme&utm_medium=readme), the CLI and the GitHub Action. It reads the default branch at a fixed commit, as text:
 
 - a committed tool list (`tools.json`, tool snapshots or an MCPB manifest), used as is;
 - otherwise tool definitions written as literals in the source, or reproduced from SDK registrations.
@@ -67,7 +67,7 @@ Commit `.github/mcp-check/registry.json` to the default branch, naming the listi
 }
 ```
 
-For a subfolder listing the id is `owner/repo/path/to/server`; `"id"` may also be a list when one repository has several listings. There is no sign-in and nothing to install: the file on the default branch is the claim. Delete it to drop the mark.
+For a folder listing in a monorepo, add the folder: `{"id": "owner/repo", "path": "packages/server"}`. The id is lower-case. There is no sign-in and nothing to install: the file on the default branch is the claim. Delete it to drop the mark.
 
 ## Refreshes
 
@@ -79,7 +79,7 @@ Open a [Remove a listing](../../issues/new?template=remove-listing.yml) issue, o
 
 ## Entry format
 
-One JSON file per listing: `servers/<owner>/<repo>.json`, with `__<path-slug>` added for a subfolder listing. File names and listing URLs are lowercase; `id` keeps GitHub's spelling. [`schema/server.schema.json`](schema/server.schema.json) is the JSON Schema; `npm run check` validates every entry.
+One JSON file per listing: `servers/<owner>/<repo>.json`, or `servers/<owner>/<repo>__<path-slug>.json` for a folder in a monorepo, where the slug is the folder path lower-cased with every character outside `a-z` and `0-9` turned into `-` (`packages/Server_X` becomes `packages-server-x`). The listing page uses the same slug. Ids, file names and listing URLs are all lower-case; `id` is `owner/repo` for folder listings too, with the folder in `path`. Each entry also records the repository's `defaultBranch`, for the one-click links. Seed entries for our own servers have `submitted.issue: null`. [`schema/server.schema.json`](schema/server.schema.json) is the JSON Schema; `npm run check` validates every entry.
 
 ## Working on this repository
 
@@ -102,4 +102,4 @@ Apache-2.0. See [LICENSE](LICENSE).
 
 ---
 
-Built and maintained by [IsoKron](https://isokron.ai?utm_source=github&utm_medium=registry&utm_campaign=registry).
+Built and maintained by [IsoKron](https://isokron.ai?utm_source=mcp-check-registry-readme&utm_medium=readme).

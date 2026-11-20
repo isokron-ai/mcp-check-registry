@@ -30,6 +30,9 @@ test('a good submission opens one PR with the entry and replies with the results
   const entry = JSON.parse(gh.state.trees[gh.state.commits[tip].tree]['servers/acme/weather-mcp.json']);
   assert.deepEqual(entry.submitted, { at: '2026-11-20T10:00:00Z', by: 'acme-dev', issue: 5 });
   assert.equal(entry.name, 'Weather MCP');
+  assert.equal(entry.id, 'acme/weather-mcp');
+  assert.equal(entry.defaultBranch, 'main');
+  assert.match(gh.state.pulls[0].body, /utm_source=mcp-check-registry-bot&utm_medium=action/);
   assert.equal(gh.state.comments.length, 1);
   assert.ok(gh.state.comments[0].body.startsWith(COMMENT_MARKER));
   assert.match(gh.state.comments[0].body, /once #\d+ is merged/);
@@ -97,7 +100,7 @@ test('issues without the submission label, closed issues and PRs are skipped', a
 });
 
 test('a file already used by a different id is held for review', async () => {
-  const other = JSON.stringify({ id: 'acme/weather-mcp/packages/x' });
+  const other = JSON.stringify({ id: 'acme/weather-mcp', path: 'packages/x' });
   const gh = fakeGitHub({ files: { 'servers/acme/weather-mcp.json': other } });
   const r = await handle(event(), { gh, scan: okScan, verify: noMarks, now: NOW });
   assert.equal(r.outcome, 'conflict');
@@ -110,4 +113,15 @@ test('a planted marker in someone else\'s comment is not edited', async () => {
   await handle(event(), { gh, scan: okScan, verify: noMarks, now: NOW });
   assert.equal(gh.state.comments.find((c) => c.id === 1).body, COMMENT_MARKER + ' fake');
   assert.equal(gh.state.comments.length, 2);
+});
+
+test('a folder submission goes to the slug file with id owner/repo', async () => {
+  const gh = fakeGitHub();
+  const r = await handle(event({ body: formBody({ path: 'packages/Weather_Server' }) }), { gh, scan: okScan, verify: noMarks, now: NOW });
+  assert.equal(r.file, 'servers/acme/weather-mcp__packages-weather-server.json');
+  const tip = gh.state.refs['submission/issue-5'];
+  const entry = JSON.parse(gh.state.trees[gh.state.commits[tip].tree][r.file]);
+  assert.equal(entry.id, 'acme/weather-mcp');
+  assert.equal(entry.path, 'packages/Weather_Server');
+  assert.equal(gh.state.pulls[0].title, 'Add acme/weather-mcp (packages/Weather_Server)');
 });
