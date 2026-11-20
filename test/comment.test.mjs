@@ -87,7 +87,7 @@ test('hostile names and tool names cannot inject Markdown, links or mentions', (
 test('folder listings name the folder, use the slug listing URL and claim with a path', () => {
   const md = result({ path: 'packages/Server_X' });
   assert.match(md, /folder `packages\/Server_X`/);
-  assert.ok(md.includes('/mcp-check/registry/isokron-ai/kronicle-lite__packages-server-x?'));
+  assert.ok(md.includes('/mcp-check/registry/isokron-ai/kronicle-lite~packages-server-x?'));
   assert.ok(md.includes('{\n  "id": "isokron-ai/kronicle-lite",\n  "path": "packages/Server_X"\n}'));
   const link = /\*\*\[Add mcp-check to your CI\]\((https:[^)\s]+)\)\*\*/.exec(md)[1];
   assert.equal(new URL(link).searchParams.get('value'), workflowYaml(undefined, { path: 'packages/Server_X' }));

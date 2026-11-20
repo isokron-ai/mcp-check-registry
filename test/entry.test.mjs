@@ -33,9 +33,9 @@ test('a built entry matches contract C2 and the schema', () => {
 test('ids, file names and listing URLs are lower-case; folders get a slug suffix', () => {
   assert.equal(entryId('Acme/Weather-MCP'), 'acme/weather-mcp');
   assert.equal(entryFile('Acme/Weather-MCP'), 'servers/acme/weather-mcp.json');
-  assert.equal(entryFile('Acme/mono', 'packages/Server_X'), 'servers/acme/mono__packages-server-x.json');
+  assert.equal(entryFile('Acme/mono', 'packages/Server_X'), 'servers/acme/mono~packages-server-x.json');
   assert.equal(listingUrl('Acme/Weather-MCP'), 'https://isokron.ai/mcp-check/registry/acme/weather-mcp');
-  assert.equal(listingUrl('Acme/mono', 'packages/@scope/x.y'), 'https://isokron.ai/mcp-check/registry/acme/mono__packages--scope-x-y');
+  assert.equal(listingUrl('Acme/mono', 'packages/@scope/x.y'), 'https://isokron.ai/mcp-check/registry/acme/mono~packages--scope-x-y');
   assert.equal(pathSlug('Packages/Server_X.v2'), 'packages-server-x-v2');
 });
 
@@ -111,4 +111,31 @@ test('every committed entry in servers/ is valid', () => {
 
 test('the validator refuses schema keywords it does not implement', () => {
   assert.match(validate(1, { type: 'integer', oneOf: [] }).join(), /oneOf is not supported/);
+});
+
+test('name, description and scan.error refuse control characters only', () => {
+  const s = loadSchema();
+  const e = buildEntry({ ...base(), name: 'Weather @ MCP <beta> "x" #1 \u00e9\u6f22', description: 'Any text: [links](x), `code`, emoji \u2603.' });
+  assert.deepEqual(validate(e, s), []);
+  for (const [k, v] of [['name', 'a\u0007b'], ['description', 'line\nbreak'], ['description', 'del\u007f'], ['name', 'c1\u0085']]) {
+    const bad = structuredClone(e); bad[k] = v;
+    assert.ok(validate(bad, s).some((x) => x.includes('does not match')), k + ' ' + JSON.stringify(v));
+  }
+  const nt = structuredClone(e);
+  Object.assign(nt.scan, { status: 'no-tools', error: 'x\ny', rubric: null, fidelity: null, tools: null, catalogHash: null, grades: null, findings: null });
+  assert.ok(validate(nt, s).length > 0, 'schema refuses a newline in scan.error');
+});
+
+test('building an entry normalises scan.error to one line of at most 500 characters', () => {
+  const scan = { ...base().scan, status: 'no-tools', error: 'no tool definitions\n\tfound\u0000 here ' + 'x'.repeat(600), rubric: null, fidelity: null, tools: null, catalogHash: null, grades: null, findings: null };
+  const e = buildEntry({ ...base(), scan });
+  assert.ok(e.scan.error.startsWith('no tool definitions found here x'));
+  assert.equal(e.scan.error.length, 500);
+  assert.ok(!/[\u0000-\u001f\u007f-\u009f]/.test(e.scan.error));
+});
+
+test('folder files and pages use "~", which no repository name contains', () => {
+  assert.equal(entryFile('acme/my__repo'), 'servers/acme/my__repo.json');
+  assert.equal(entryFile('acme/my', 'repo'), 'servers/acme/my~repo.json');
+  assert.notEqual(entryFile('acme/my__repo'), entryFile('acme/my', 'repo'));
 });

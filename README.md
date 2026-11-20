@@ -95,7 +95,7 @@ Open a [Remove a listing](../../issues/new?template=remove-listing.yml) issue, o
 
 ## Entry format
 
-One JSON file per listing: `servers/<owner>/<repo>.json`, or `servers/<owner>/<repo>__<path-slug>.json` for a folder in a monorepo, where the slug is the folder path lower-cased with every character outside `a-z` and `0-9` turned into `-` (`packages/Server_X` becomes `packages-server-x`). The listing page uses the same slug. Ids, file names and listing URLs are all lower-case; `id` is `owner/repo` for folder listings too, with the folder in `path`. Each entry also records the repository's `defaultBranch`, for the one-click links. Seed entries for our own servers have `submitted.issue: null`. [`schema/server.schema.json`](schema/server.schema.json) is the JSON Schema; `npm run check` validates every entry.
+One JSON file per listing: `servers/<owner>/<repo>.json`, or `servers/<owner>/<repo>~<path-slug>.json` for a folder in a monorepo (`~` can't occur in a GitHub repository name, so it never collides with another repository), where the slug is the folder path lower-cased with every character outside `a-z` and `0-9` turned into `-` (`packages/Server_X` becomes `packages-server-x`). The listing page uses the same slug. Ids, file names and listing URLs are all lower-case; `id` is `owner/repo` for folder listings too, with the folder in `path`. Each entry also records the repository's `defaultBranch`, for the one-click links. Seed entries for our own servers have `submitted.issue: null`. [`schema/server.schema.json`](schema/server.schema.json) is the JSON Schema; `npm run check` validates every entry.
 
 ## Working on this repository
 

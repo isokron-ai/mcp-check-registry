@@ -5,7 +5,8 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { loadSchema, validate } from './lib/schema.mjs';
-import { LISTING_BASE } from './lib/constants.mjs';
+import { LISTING_BASE, FOLDER_SEP } from './lib/constants.mjs';
+import { oneLine } from './lib/text.mjs';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 
@@ -17,16 +18,16 @@ export function pathSlug(path) {
 /** Entry id: lower-case owner/repo, for a folder listing too (the folder is in "path"). */
 export const entryId = (fullName) => String(fullName).toLowerCase();
 
-/** servers/<owner>/<repo>[__<slug>].json, lowercase. */
+/** servers/<owner>/<repo>[~<slug>].json, lowercase. */
 export function entryFile(fullName, path = '') {
   const [owner, repo] = fullName.toLowerCase().split('/');
-  return 'servers/' + owner + '/' + repo + (path ? '__' + pathSlug(path) : '') + '.json';
+  return 'servers/' + owner + '/' + repo + (path ? FOLDER_SEP + pathSlug(path) : '') + '.json';
 }
 
-/** Contract C3: https://isokron.ai/mcp-check/registry/<owner>/<repo>[__<slug>], lowercase. */
+/** Contract C3: https://isokron.ai/mcp-check/registry/<owner>/<repo>[~<slug>], lowercase. */
 export function listingUrl(fullName, path = '') {
   const [owner, repo] = fullName.toLowerCase().split('/');
-  return LISTING_BASE + '/' + owner + '/' + repo + (path ? '__' + pathSlug(path) : '');
+  return LISTING_BASE + '/' + owner + '/' + repo + (path ? FOLDER_SEP + pathSlug(path) : '');
 }
 
 /**
@@ -43,7 +44,8 @@ export function buildEntry({ fullName, path = '', defaultBranch, name, descripti
     name: name ?? existing?.name,
     description: description ?? existing?.description,
     submitted: existing?.submitted ?? submitted,
-    scan,
+    // scan.error is checker output: one line, no control characters, 500 characters at most.
+    scan: scan && typeof scan.error === 'string' ? { ...scan, error: oneLine(scan.error, 500) } : scan,
     ci,
     owner,
   };

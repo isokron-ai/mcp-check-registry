@@ -8,7 +8,7 @@
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { COMMENT_MARKER, CHECKS_BASE, SITE_HOME, UTM_BOT as UTM, SECTIONS, SECTION_LABELS, WORKFLOW_PATH, CLAIM_PATH } from './lib/constants.mjs';
-import { mdText, mdCode, tagged } from './lib/text.mjs';
+import { mdText, mdCode, oneLine, tagged } from './lib/text.mjs';
 import { workflowYaml, claimJson, addToCiUrl, claimUrl } from './lib/workflow-template.mjs';
 import { entryId, listingUrl } from './entry.mjs';
 
@@ -116,7 +116,7 @@ export function renderResult({ repo, path = '', name, scan, top, ci = null, owne
 }
 
 /** "(scanned 54 of 54 source files)" from the checker's message, when it has one. */
-const scannedNote = (err) => { const m = /\((scanned \d+ of \d+ source files)\)/.exec(String(err || '')); return m ? ' (' + m[1] + ')' : ''; };
+const scannedNote = (err) => { const m = /\((scanned \d+ of \d+ source files)\)/.exec(oneLine(err, 500)); return m ? ' (' + m[1] + ')' : ''; };
 
 const HOW = () => 'How grading works: ' + tagged(SITE_HOME, UTM);
 

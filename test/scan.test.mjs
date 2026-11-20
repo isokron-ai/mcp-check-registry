@@ -76,3 +76,8 @@ test('missing, private and unreadable repositories throw ScanError', async () =>
   await assert.rejects(scanRepo({ owner: 'a', repo: 'b', gh: fakeGh(), run: async () => ({ code: 0, stdout: 'not json', stderr: '' }) }), (e) => e.code === 'checker');
   await assert.rejects(scanRepo({ owner: 'a', repo: 'b', gh: fakeGh({ sha: 'main' }), run }), (e) => e.code === 'checker');
 });
+
+test('a multi-line checker message becomes one clean line in the no-tools block', async () => {
+  const res = await scanRepo({ owner: 'a', repo: 'b', gh: fakeGh(), now: NOW, run: async () => ({ code: 3, stdout: '', stderr: 'mcp-check: no tool definitions found in a/b\u0007 (scanned 1 of 1 source files).\n' }) });
+  assert.equal(res.scan.error, 'no tool definitions found in a/b (scanned 1 of 1 source files).');
+});

@@ -5,6 +5,12 @@ export const REGISTRY_REPO = 'isokron-ai/mcp-check-registry';
 
 /** Listing pages on the site (contract C3). */
 export const LISTING_BASE = 'https://isokron.ai/mcp-check/registry';
+
+/**
+ * Between the repository name and a folder slug in file names and listing URLs. "~" can't occur
+ * in a GitHub repository name (unlike "__"), so <repo>~<slug> never collides with another repository.
+ */
+export const FOLDER_SEP = '~';
 export const CHECKS_BASE = 'https://isokron.ai/mcp-check/checks';
 export const SITE_HOME = 'https://isokron.ai/mcp-check';
 

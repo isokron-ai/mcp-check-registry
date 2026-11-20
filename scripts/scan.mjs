@@ -11,6 +11,7 @@ import { pathToFileURL } from 'node:url';
 import { github } from './lib/github.mjs';
 import { SEVERITY_MAP, SECTIONS } from './lib/constants.mjs';
 import { parsePath } from './lib/form.mjs';
+import { oneLine } from './lib/text.mjs';
 
 const require = createRequire(import.meta.url);
 const PKG = require('@isokron/mcp-check/package.json');
@@ -72,7 +73,7 @@ export function scanBlock(report, { commit, at }) {
 
 /** A scan block for a repository where the static reader found no tool definitions. */
 export function noToolsBlock({ commit, at, error }) {
-  return { at, commit, checker: CHECKER_VERSION, rubric: null, source: 'repo-static', status: 'no-tools', error: String(error).slice(0, 500), fidelity: null, tools: null, catalogHash: null, grades: null, findings: null };
+  return { at, commit, checker: CHECKER_VERSION, rubric: null, source: 'repo-static', status: 'no-tools', error: oneLine(error, 500), fidelity: null, tools: null, catalogHash: null, grades: null, findings: null };
 }
 
 /**

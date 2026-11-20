@@ -118,7 +118,7 @@ test('a planted marker in someone else\'s comment is not edited', async () => {
 test('a folder submission goes to the slug file with id owner/repo', async () => {
   const gh = fakeGitHub();
   const r = await handle(event({ body: formBody({ path: 'packages/Weather_Server' }) }), { gh, scan: okScan, verify: noMarks, now: NOW });
-  assert.equal(r.file, 'servers/acme/weather-mcp__packages-weather-server.json');
+  assert.equal(r.file, 'servers/acme/weather-mcp~packages-weather-server.json');
   const tip = gh.state.refs['submission/issue-5'];
   const entry = JSON.parse(gh.state.trees[gh.state.commits[tip].tree][r.file]);
   assert.equal(entry.id, 'acme/weather-mcp');
