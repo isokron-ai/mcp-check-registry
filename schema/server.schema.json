@@ -53,7 +53,7 @@
             "openai": { "$ref": "#/$defs/grade" },
             "security": { "$ref": "#/$defs/grade" },
             "quality": { "$ref": "#/$defs/grade" },
-            "surface": { "description": "null when there is no write surface to grade.", "$ref": "#/$defs/gradeOrNull" }
+            "surface": { "description": "Always null since rubric 2.2.0 (mcp-check 1.2.0): the write surface is reported as guard coverage, not a letter. Earlier scans: null when there was no write surface to grade.", "$ref": "#/$defs/gradeOrNull" }
           }
         },
         "findings": {

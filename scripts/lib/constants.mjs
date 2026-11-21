@@ -23,9 +23,9 @@ export const UTM_README = { utm_source: 'mcp-check-registry-readme', utm_medium:
 
 /**
  * Action pins for the one-click workflow (contract C1).
- * TODO(release 1.1.0): pin isokron-ai/mcp-check to the release commit SHA with a "# v1.1.0" comment,
- * as the site does. Until then the major tag is used. v1 currently points at 1.0.0, which has no
- * zero-config source reading; the link only works once 1.1.0 moves v1.
+ * The major tag is used: v1 points at the latest 1.x release (1.2.0, f8a59be), which reads the tool definitions
+ * from source with no inputs and ends neutral, not red, when there is nothing to grade. Whether to pin a release
+ * commit SHA instead is an open owner decision.
  */
 export const PINS = {
   checkout: { ref: '3d3c42e5aac5ba805825da76410c181273ba90b1', label: 'v7.0.1' },
