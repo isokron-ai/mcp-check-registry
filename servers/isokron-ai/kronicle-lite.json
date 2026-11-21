@@ -12,10 +12,10 @@
     "issue": null
   },
   "scan": {
-    "at": "2026-11-20T21:42:57Z",
+    "at": "2026-11-21T00:28:04Z",
     "commit": "179d269889ee414c7eaa69ccc95a2a5888c2ab52",
-    "checker": "1.1.1",
-    "rubric": "2.1.1",
+    "checker": "1.2.0",
+    "rubric": "2.2.0",
     "source": "repo-static",
     "status": "ok",
     "fidelity": "exact",
@@ -27,7 +27,7 @@
       "openai": "A",
       "security": "A",
       "quality": "A",
-      "surface": "A"
+      "surface": null
     },
     "findings": {
       "high": 0,
@@ -37,12 +37,12 @@
   },
   "ci": {
     "verified": false,
-    "checkedAt": "2026-11-20T21:43:00Z",
+    "checkedAt": "2026-11-21T00:28:06Z",
     "workflow": ""
   },
   "owner": {
     "verified": false,
-    "checkedAt": "2026-11-20T21:43:00Z",
+    "checkedAt": "2026-11-21T00:28:06Z",
     "method": ""
   }
 }

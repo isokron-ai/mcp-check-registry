@@ -16,6 +16,6 @@
     "refresh": "node scripts/refresh.mjs"
   },
   "dependencies": {
-    "@isokron/mcp-check": "1.1.1"
+    "@isokron/mcp-check": "1.2.0"
   }
 }
