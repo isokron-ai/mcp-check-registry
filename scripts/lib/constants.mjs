@@ -23,7 +23,7 @@ export const UTM_README = { utm_source: 'mcp-check-registry-readme', utm_medium:
 
 /**
  * Action pins for the one-click workflow (contract C1).
- * The major tag is used: v1 points at the latest 1.x release (1.2.0, f8a59be), which reads the tool definitions
+ * The major tag is used: v1 points at the latest 1.x release (1.3.0, 38207e6), which reads the tool definitions
  * from source with no inputs and ends neutral, not red, when there is nothing to grade. Whether to pin a release
  * commit SHA instead is an open owner decision.
  */
