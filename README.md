@@ -15,7 +15,7 @@ To list a server, open a [Submit your MCP server](../../issues/new?template=subm
 The submission workflow reads the tool definitions from the repository's source with [`@isokron/mcp-check`](https://github.com/isokron-ai/mcp-check), the same engine as the [web checker](https://isokron.ai/mcp-check?utm_source=mcp-check-registry-readme&utm_medium=readme), the CLI and the GitHub Action. It reads the default branch at a fixed commit, as text:
 
 - a committed tool list (`tools.json`, tool snapshots or an MCPB manifest), used as is;
-- otherwise tool definitions written as literals in the source, or reproduced from SDK registrations.
+- otherwise tool definitions written as literals in the source, or reproduced from SDK registrations in TypeScript, Python, Go or Rust (C# is not read yet).
 
 **Nothing is ever run.** The repository is not installed, built or started, and no tool is called. Each listing records which of the above it came from, the commit, and the checker and rubric versions.
 
